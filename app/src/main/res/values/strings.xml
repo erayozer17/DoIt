@@ -3,4 +3,18 @@
     <string name="action_settings">Settings</string>
     <string name="title_activity_ana">anaActivity</string>
     <string name="title_activity_ekran">ekranActivity</string>
+
+    <string name="liste_olusturmadin">You do not have any list yet. Tap the plus sign.</string>
+    <string name="yeni_liste_adi">New List</string>
+    <string name="tamam">Okay</string>
+    <string name="iptal">Cancel</string>
+    <string name="seciminiz">Your Choice</string>
+    <string name="isim_degistir">Change Name</string>
+    <string name="degistir">Change</string>
+    <string name="sil">Delete</string>
+    <string name="bu_listeden">Give me something from this list</string>
+    <string name="bugunuprogrami">Today\'s program</string>
+    <string name="yapildiolarak">Mark as done</string>
+    <string name="listebos">This list is empty.</string>
+    <string name="listeyeekle">This list is empty. Tap the plus sign.</string>
 </resources>

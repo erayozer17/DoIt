@@ -1,6 +1,7 @@
 package com.staj.eray.doit;
 
 import android.app.Activity;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -12,13 +13,15 @@ import android.widget.TextView;
 public class ekranAdapter extends ArrayAdapter<String> {
 
     private final Activity context;
-    private final String[] itemname;
+    private final String[] itemname; // kullanılmamasına rağmen constructordaki super için gerekli
+    private final Liste[] gelenListe;
 
-    public ekranAdapter(Activity context, String[] itemname) {
+    public ekranAdapter(Activity context, String[] itemname, Liste[] gelenListe) {
         super(context, R.layout.custom_layout_ekran_list,itemname);
 
         this.context=context;
         this.itemname=itemname;
+        this.gelenListe = gelenListe;
     }
 
     @NonNull
@@ -29,7 +32,14 @@ public class ekranAdapter extends ArrayAdapter<String> {
 
         TextView txtTitle = (TextView) rowView.findViewById(R.id.textView4);
 
-        txtTitle.setText(itemname[position]);
+
+        if (gelenListe[position].getYapildi_mi() == 0)
+            txtTitle.setText(gelenListe[position].getYapilacak());
+        else{
+            txtTitle.setText(" " + gelenListe[position].getYapilacak() + " ");
+            txtTitle.setPaintFlags(txtTitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        }
+
         return rowView;
     }
 }

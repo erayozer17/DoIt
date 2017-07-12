@@ -7,8 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -83,6 +81,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE " + tablo + " SET YAPILACAK='" + yeniDeger +"'"+ " WHERE YAPILACAK='" + eskiDeger +"'" );
     }
 
+    public void yapildiIsaretle(String tablo, String yapilacakDeger){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE " + tablo + " SET YAPILDI_MI='1'"+ " WHERE YAPILACAK='" + yapilacakDeger +"'" );
+    }
+
     public void kayitSil(String tablo, String deger){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(tablo,"YAPILACAK="+"'"+deger+"'",null);
@@ -110,15 +113,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return duzelt;
     }
 
-    public String[] tablodakiDegerler(String deger){
+    public Liste[] tablodakiDegerler(String deger){
         SQLiteDatabase db = this.getWritableDatabase();
-        ArrayList<String> arrayList = new ArrayList<>();
+        ArrayList<Liste> arrayList = new ArrayList<>();
         Cursor c = db.rawQuery("SELECT * FROM " + deger,null);
+        Liste liste;
         if (c!=null && c.getCount()>0){
             while (c.moveToNext()){
-                arrayList.add(c.getString(1));
+                liste = new Liste(c.getInt(0),c.getString(1),c.getInt(2));
+                arrayList.add(liste);
             }
         }
-        return arrayList.toArray(new String[arrayList.size()]);
+        return arrayList.toArray(new Liste[arrayList.size()]);
     }
 }

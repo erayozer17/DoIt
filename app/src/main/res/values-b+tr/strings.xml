@@ -1,0 +1,17 @@
+<resources>
+    <string name="liste_olusturmadin">Bir liste oluşturmadınız. Başlamak için + işaretine dokunun.</string>
+    <string name="yeni_liste_adi">Yeni Listenizin Adı</string>
+    <string name="tamam">Tamam</string>
+    <string name="iptal">İptal</string>
+    <string name="seciminiz">Seçiminiz</string>
+    <string name="isim_degistir">İsim Değiştir</string>
+    <string name="degistir">Degistir</string>
+    <string name="sil">Sil</string>
+    <string name="bu_listeden">Bu Listeden Bir Şey Yapayım</string>
+    <string name="bugunuprogrami">Bugünün Programı</string>
+    <string name="yapildiolarak">YAPILDI OLARAK İŞARETLE</string>
+    <string name="listebos">Bu liste bos.</string>
+    <string name="listeyeekle">Listeniz henüz boş. Ekleme yapmak için + işaretine dokunun.</string>
+    <string name="app_name">Do It!</string>
+</resources>
+

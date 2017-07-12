@@ -17,12 +17,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
 public class anaActivity extends AppCompatActivity {
 
-    Integer [] resimler = {R.drawable.qw,R.drawable.qwe,R.drawable.qwwwe,R.drawable.asdf,R.drawable.qwer};
+    Integer [] resimler = {R.drawable.qw,R.drawable.qwwwe,R.drawable.asdf};
     String[] tablolar;
     String[] tablolarFiltreli;
     private String m_Text = "";
@@ -40,7 +41,7 @@ public class anaActivity extends AppCompatActivity {
         tablolar = databaseHelper.tablolarDondur();
         tablolarFiltreli = Arrays.copyOfRange(tablolar,3,tablolar.length);
         if (tablolarFiltreli.length == 0){
-            Toast.makeText(anaActivity.this,"Bir liste oluşturmadınız. Başlamak için + işaretine dokunun.",Toast.LENGTH_LONG).show();
+            Toast.makeText(anaActivity.this,getString(R.string.liste_olusturmadin),Toast.LENGTH_LONG).show();
         }
         listView = (ListView) findViewById(R.id.listView);
         MyAdapter myAdapter = new MyAdapter(this,tablolarFiltreli,resimler);
@@ -61,14 +62,14 @@ public class anaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(anaActivity.this);
-                builder.setTitle("Yeni Listenizin Adı");
+                builder.setTitle(R.string.yeni_liste_adi);
 
                 final EditText input = new EditText(getApplicationContext());
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 input.setTextColor(Color.BLACK);
                 builder.setView(input);
 
-                builder.setPositiveButton("TAMAM", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(getString(R.string.tamam), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         m_Text = input.getText().toString();
@@ -78,7 +79,7 @@ public class anaActivity extends AppCompatActivity {
                     }
                 });
 
-                builder.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
@@ -93,23 +94,23 @@ public class anaActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("Seçiminiz");
-        menu.add(0,v.getId(),0,"İsim Değiştir");
-        menu.add(0,v.getId(),0,"Sil");
-        menu.add(0,v.getId(),0,"Bu Listeden Bir Şey Yapayım");
+        menu.setHeaderTitle(getString(R.string.seciminiz));
+        menu.add(0,v.getId(),0,getString(R.string.isim_degistir));
+        menu.add(0,v.getId(),0,getString(R.string.sil));
+        menu.add(0,v.getId(),0,getString(R.string.bu_listeden));
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final MenuItem item2 = item;
-        if (item.getTitle()=="Sil"){
+        if (item.getTitle()==getString(R.string.sil)){
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             int listPosition = info.position;
             databaseHelper.tabloSil(tablolarFiltreli[listPosition]);
             yenile();
-        } else if (item.getTitle()=="İsim Değiştir"){
+        } else if (item.getTitle()==getString(R.string.isim_degistir)){
             AlertDialog.Builder builder = new AlertDialog.Builder(anaActivity.this);
-            builder.setTitle("İsim Değiştir");
+            builder.setTitle(getString(R.string.isim_degistir));
 
             final EditText input = new EditText(getApplicationContext());
             input.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -117,7 +118,7 @@ public class anaActivity extends AppCompatActivity {
             builder.setView(input);
 
 
-            builder.setPositiveButton("TAMAM", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.tamam), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item2.getMenuInfo();
@@ -128,7 +129,7 @@ public class anaActivity extends AppCompatActivity {
                 }
             });
 
-            builder.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
@@ -136,39 +137,37 @@ public class anaActivity extends AppCompatActivity {
             });
 
             builder.show();
-        } else if (item.getTitle()=="Bu Listeden Bir Şey Yapayım"){
+        } else if (item.getTitle()==getString(R.string.bu_listeden)){
             AlertDialog.Builder builder = new AlertDialog.Builder(anaActivity.this);
-            builder.setTitle("Bugünün Programı");
+            builder.setTitle(getString(R.string.bugunuprogrami));
 
-            final String deger;
-            int sayi;
             final int listPosition2;
 
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item2.getMenuInfo();
             int listPosition = info.position;
             listPosition2 = listPosition;
-            String[] degerler = databaseHelper.tablodakiDegerler(tablolarFiltreli[listPosition]);
-            Random r = new Random();
-            if (degerler.length == 0){
-                deger = "Bu liste henüz bos.";
-            } else if (degerler.length == 1){
-                deger = degerler[0];
-            } else {
-                sayi = degerler.length;
-                int rasgele = r.nextInt(sayi);
-                deger = degerler[rasgele];
+            Liste[] liste2 = databaseHelper.tablodakiDegerler(tablolarFiltreli[listPosition]);
+            ArrayList<String> yapilmamislar = new ArrayList<>();
+
+            for (Liste liste:liste2) {
+                if(liste.getYapildi_mi() != 1)
+                    yapilmamislar.add(liste.getYapilacak());
             }
+
+            String[] degerler = yapilmamislar.toArray(new String[yapilmamislar.size()]);
+
+            final String deger = faaliyetDondur(degerler);
 
             builder.setMessage(deger);
 
-            builder.setPositiveButton("YAPILDI OLARAK İŞARETLE", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.yapildiolarak), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    databaseHelper.kayitSil(tablolarFiltreli[listPosition2],deger);
+                    databaseHelper.yapildiIsaretle(tablolarFiltreli[listPosition2],deger);
                 }
             });
 
-            builder.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
@@ -189,5 +188,21 @@ public class anaActivity extends AppCompatActivity {
         Intent intent = getIntent();
         finish();
         startActivity(intent);
+    }
+
+    public String faaliyetDondur(String[] degerler){
+        String deger;
+        int sayi;
+        Random r = new Random();
+        if (degerler.length == 0){
+            deger = getString(R.string.listebos);
+        } else if (degerler.length == 1){
+            deger = degerler[0];
+        } else {
+            sayi = degerler.length;
+            int rasgele = r.nextInt(sayi);
+            deger = degerler[rasgele];
+        }
+        return deger;
     }
 }

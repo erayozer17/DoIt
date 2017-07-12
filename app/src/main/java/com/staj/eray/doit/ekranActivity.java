@@ -22,8 +22,7 @@ public class ekranActivity extends AppCompatActivity {
     private String tiklananGelen;
     private DatabaseHelper databaseHelper;
     private String m_Text = "";
-    private ListView listView;
-    private String[] donenDegerler;
+    private String[] donenDegerlerdenYapilacaklar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,16 +33,23 @@ public class ekranActivity extends AppCompatActivity {
         toolbar.setTitle(tiklananGelen);
         setSupportActionBar(toolbar);
         databaseHelper = new DatabaseHelper(this);
-        donenDegerler = databaseHelper.tablodakiDegerler(tiklananGelen);
+        Liste[] donenDegerler = databaseHelper.tablodakiDegerler(tiklananGelen);
+
+        donenDegerlerdenYapilacaklar = new String[donenDegerler.length];
+        int sayac = 0;
+        for (Liste liste: donenDegerler) {
+            donenDegerlerdenYapilacaklar[sayac] = liste.getYapilacak();
+            sayac++;
+        }
 
         if (donenDegerler.length == 0){
-            Toast.makeText(ekranActivity.this,"Listeniz henüz boş. Ekleme yapmak için + işaretine dokunun.",Toast.LENGTH_LONG).show();
+            Toast.makeText(ekranActivity.this,getString(R.string.listeyeekle),Toast.LENGTH_LONG).show();
         }
 
 
-        listView = (ListView) findViewById(R.id.listViewEkran);
+        ListView listView = (ListView) findViewById(R.id.listViewEkran);
 
-        ekranAdapter ekranAdapter = new ekranAdapter(this,donenDegerler);
+        ekranAdapter ekranAdapter = new ekranAdapter(this,donenDegerlerdenYapilacaklar, donenDegerler);
 
         listView.setAdapter(ekranAdapter);
         registerForContextMenu(listView);
@@ -62,7 +68,7 @@ public class ekranActivity extends AppCompatActivity {
                 input.setTextColor(Color.BLACK);
                 builder.setView(input);
 
-                builder.setPositiveButton("TAMAM", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(getString(R.string.tamam), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         m_Text = input.getText().toString();
@@ -71,7 +77,7 @@ public class ekranActivity extends AppCompatActivity {
                     }
                 });
 
-                builder.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.cancel();
@@ -92,22 +98,20 @@ public class ekranActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("Seçiminiz");
-        menu.add(0,v.getId(),0,"Değiştir");
-        menu.add(0,v.getId(),0,"Sil");
+        menu.setHeaderTitle(getString(R.string.seciminiz));
+        menu.add(0,v.getId(),0,getString(R.string.degistir));
+        menu.add(0,v.getId(),0,getString(R.string.sil));
+        menu.add(0,v.getId(),0,getString(R.string.yapildiolarak));
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-
-        final MenuItem item2 = item;
-
-        if (item.getTitle()=="Sil"){
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-            int listPosition = info.position;
-            databaseHelper.kayitSil(tiklananGelen,donenDegerler[listPosition]);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        final int listPosition = info.position;
+        if (item.getTitle()==getString(R.string.sil)){
+            databaseHelper.kayitSil(tiklananGelen,donenDegerlerdenYapilacaklar[listPosition]);
             yenile();
-        } else if (item.getTitle()=="Değiştir"){
+        } else if (item.getTitle()==getString(R.string.degistir)){
 
             AlertDialog.Builder builder = new AlertDialog.Builder(ekranActivity.this);
             builder.setTitle(tiklananGelen);
@@ -115,21 +119,19 @@ public class ekranActivity extends AppCompatActivity {
             final EditText input = new EditText(getApplicationContext());
             input.setInputType(InputType.TYPE_CLASS_TEXT);
             input.setTextColor(Color.BLACK);
+            input.setText(donenDegerlerdenYapilacaklar[listPosition]);
             builder.setView(input);
 
-            builder.setPositiveButton("TAMAM", new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.tamam), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     m_Text = input.getText().toString();
-
-                    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item2.getMenuInfo();
-                    int listPosition = info.position;
-                    databaseHelper.kaydiDuzenle(tiklananGelen,donenDegerler[listPosition],m_Text);
+                    databaseHelper.kaydiDuzenle(tiklananGelen,donenDegerlerdenYapilacaklar[listPosition],m_Text);
                     yenile();
                 }
             });
 
-            builder.setNegativeButton("İPTAL", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     dialogInterface.cancel();
@@ -138,6 +140,9 @@ public class ekranActivity extends AppCompatActivity {
 
             builder.show();
 
+        } else if (item.getTitle() == getString(R.string.yapildiolarak)){
+            databaseHelper.yapildiIsaretle(tiklananGelen,donenDegerlerdenYapilacaklar[listPosition]);
+            yenile();
         }
 
         return true;
